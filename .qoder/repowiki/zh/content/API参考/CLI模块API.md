@@ -6,7 +6,16 @@
 - [package.json](file://package.json)
 - [README.md](file://README.md)
 - [AGENTS.md](file://AGENTS.md)
+- [tsconfig.json](file://tsconfig.json)
 </cite>
+
+## 更新摘要
+**变更内容**
+- 完整实现了CLI模块的REPL交互功能
+- 新增了帮助文本常量和版本号常量
+- 实现了完整的命令处理机制
+- 添加了错误处理和资源清理机制
+- 更新了项目架构说明以反映实际实现
 
 ## 目录
 1. [简介](#简介)
@@ -22,6 +31,10 @@
 ## 简介
 
 CLI模块是easy-agent-cli项目的核心入口点，提供了一个基于Node.js readline模块的命令行交互界面。该模块实现了REPL（读取-求值-打印循环）交互模式，允许用户通过命令行与智能体进行多轮对话。CLI模块采用分层架构设计，遵循ESM（ECMAScript Modules）标准，支持TypeScript开发和构建。
+
+**章节来源**
+- [AGENTS.md:15-27](file://AGENTS.md#L15-L27)
+- [package.json:1-32](file://package.json#L1-L32)
 
 ## 项目结构
 
@@ -159,8 +172,8 @@ async function main(): Promise<void>
 
 ```mermaid
 flowchart TD
-Start([函数开始]) --> InitRL["创建readline接口实例"]
-InitRL --> PrintWelcome["显示欢迎信息和版本号"]
+Start([函数开始]) --> CreateRL["创建readline接口实例"]
+CreateRL --> PrintWelcome["显示欢迎信息和版本号"]
 PrintWelcome --> LoopStart["进入主循环"]
 LoopStart --> Prompt["显示提示符'> '"]
 Prompt --> ReadInput["等待用户输入"]
@@ -438,3 +451,7 @@ CLI模块作为easy-agent-cli项目的核心入口，成功实现了简洁而功
 - 提供更高级的会话管理和上下文处理
 
 该模块为整个easy-agent-cli项目奠定了坚实的基础，为用户提供了一个高效、可靠的命令行交互平台。
+
+**章节来源**
+- [AGENTS.md:15-27](file://AGENTS.md#L15-L27)
+- [package.json:1-32](file://package.json#L1-L32)

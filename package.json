@@ -16,7 +16,11 @@
     "type": "git",
     "url": "git+https://github.com/SSZero-670/easy-agent-cli.git"
   },
-  "keywords": ["cli", "agent", "ai"],
+  "keywords": [
+    "cli",
+    "agent",
+    "ai"
+  ],
   "author": "",
   "license": "ISC",
   "bugs": {
@@ -27,5 +31,8 @@
     "@types/node": "^20.14.0",
     "tsx": "^4.19.0",
     "typescript": "^5.5.0"
+  },
+  "dependencies": {
+    "eventsource-parser": "^3.1.0"
   }
 }

@@ -9,6 +9,9 @@
 - [src/session/index.ts](file://src/session/index.ts)
 - [src/ui/index.ts](file://src/ui/index.ts)
 - [src/cli/index.ts](file://src/cli/index.ts)
+- [src/agents/index.ts](file://src/agents/index.ts)
+- [src/skill/index.ts](file://src/skill/index.ts)
+- [src/mcp/index.ts](file://src/mcp/index.ts)
 - [AGENTS.md](file://AGENTS.md)
 - [package.json](file://package.json)
 </cite>
@@ -26,11 +29,11 @@
 10. [附录](#附录)
 
 ## 简介
-本文件面向“工具模块”的API文档，聚焦于工具的注册、执行与管理接口，涵盖工具定义、调用流程、权限控制、安全策略、扩展与自定义开发指南、工具间依赖与调用链路、性能监控与错误处理机制等。  
+本文件面向"工具模块"的API文档，聚焦于工具的注册、执行与管理接口，涵盖工具定义、调用流程、权限控制、安全策略、扩展与自定义开发指南、工具间依赖与调用链路、性能监控与错误处理机制等。  
 根据仓库现有内容，工具层（tools）与权限层（permissions）在架构上被明确划分：工具层负责工具实现与注册，权限层负责工具调用的权限校验与安全策略；核心层（core）作为调度中枢，协调工具与权限层完成工具执行。
 
 ## 项目结构
-仓库采用分层架构，工具模块位于 tools 层，权限模块位于 permissions 层，核心模块位于 core 层，CLI 入口位于 cli 层。各层职责清晰，遵循“上层可依赖下层，下层不可依赖上层”的依赖规则。
+仓库采用分层架构，工具模块位于 tools 层，权限模块位于 permissions 层，核心模块位于 core 层，CLI 入口位于 cli 层。各层职责清晰，遵循"上层可依赖下层，下层不可依赖上层"的依赖规则。
 
 ```mermaid
 graph TB
@@ -55,24 +58,39 @@ end
 subgraph "界面层"
 UI["src/ui/index.ts"]
 end
+subgraph "智能体层"
+AGENTS["src/agents/index.ts"]
+end
+subgraph "技能层"
+SKILL["src/skill/index.ts"]
+end
+subgraph "MCP层"
+MCP["src/mcp/index.ts"]
+end
 CLI --> CORE
 CORE --> TOOLS
 CORE --> CTX
 CORE --> SESS
+CORE --> AGENTS
+CORE --> SKILL
+CORE --> MCP
 TOOLS --> PERM
 ```
 
-图表来源
-- [AGENTS.md:31-41](file://AGENTS.md#L31-L41)
+**图表来源**
+- [AGENTS.md:15-41](file://AGENTS.md#L15-L41)
 - [src/cli/index.ts:1-65](file://src/cli/index.ts#L1-L65)
 - [src/core/index.ts:1-2](file://src/core/index.ts#L1-L2)
 - [src/tools/index.ts:1-2](file://src/tools/index.ts#L1-L2)
 - [src/permissions/index.ts:1-2](file://src/permissions/index.ts#L1-L2)
 - [src/context/index.ts:1-2](file://src/context/index.ts#L1-L2)
 - [src/session/index.ts:1-2](file://src/session/index.ts#L1-L2)
-- [src/ui/index.ts](file://src/ui/index.ts)
+- [src/ui/index.ts:1-2](file://src/ui/index.ts#L1-L2)
+- [src/agents/index.ts:1-2](file://src/agents/index.ts#L1-L2)
+- [src/skill/index.ts:1-1](file://src/skill/index.ts#L1-L1)
+- [src/mcp/index.ts:1-1](file://src/mcp/index.ts#L1-L1)
 
-章节来源
+**章节来源**
 - [AGENTS.md:15-41](file://AGENTS.md#L15-L41)
 - [src/cli/index.ts:1-65](file://src/cli/index.ts#L1-L65)
 
@@ -89,16 +107,28 @@ TOOLS --> PERM
 - CLI层（cli）
   - 职责：命令解析与交互入口
   - 依赖：core、ui
+- 智能体层（agents）
+  - 职责：Agent 实现、能力定义
+  - 依赖：tools、context
+- 技能层（skill）
+  - 职责：技能定义与管理
+  - 依赖：无下层依赖
+- MCP层（mcp）
+  - 职责：模型控制协议支持
+  - 依赖：无下层依赖
 
-章节来源
+**章节来源**
 - [AGENTS.md:29-41](file://AGENTS.md#L29-L41)
 - [src/tools/index.ts:1-2](file://src/tools/index.ts#L1-L2)
 - [src/permissions/index.ts:1-2](file://src/permissions/index.ts#L1-L2)
 - [src/core/index.ts:1-2](file://src/core/index.ts#L1-L2)
 - [src/cli/index.ts:1-65](file://src/cli/index.ts#L1-L65)
+- [src/agents/index.ts:1-2](file://src/agents/index.ts#L1-L2)
+- [src/skill/index.ts:1-1](file://src/skill/index.ts#L1-L1)
+- [src/mcp/index.ts:1-1](file://src/mcp/index.ts#L1-L1)
 
 ## 架构总览
-工具模块的调用链路从 CLI 层进入，经核心层调度，选择合适的工具并进行权限校验，最终由工具层执行具体动作。权限层贯穿工具执行前后，确保安全策略生效。
+工具模块的调用链路从 CLI 层进入，经核心层调度，选择合适的工具并进行权限校验，最终由工具层执行具体动作。权限层贯穿工具执行前后，确保安全策略生效。智能体层提供Agent能力，技能层管理具体技能，MCP层支持模型控制协议。
 
 ```mermaid
 sequenceDiagram
@@ -107,8 +137,13 @@ participant CLI as "CLI入口(src/cli/index.ts)"
 participant Core as "核心层(src/core/index.ts)"
 participant Tools as "工具层(src/tools/index.ts)"
 participant Perm as "权限层(src/permissions/index.ts)"
+participant Agents as "智能体层(src/agents/index.ts)"
+participant Skill as "技能层(src/skill/index.ts)"
 User->>CLI : 输入命令/触发工具调用
 CLI->>Core : 解析请求并委派执行
+Core->>Agents : 选择Agent并准备参数
+Agents->>Skill : 获取技能配置
+Skill-->>Agents : 返回技能定义
 Core->>Tools : 选择目标工具并准备参数
 Tools->>Perm : 请求权限校验
 Perm-->>Tools : 返回校验结果
@@ -117,12 +152,14 @@ Core-->>CLI : 格式化响应
 CLI-->>User : 输出结果/提示
 ```
 
-图表来源
+**图表来源**
 - [AGENTS.md:31-41](file://AGENTS.md#L31-L41)
 - [src/cli/index.ts:23-59](file://src/cli/index.ts#L23-L59)
 - [src/core/index.ts:1-2](file://src/core/index.ts#L1-L2)
 - [src/tools/index.ts:1-2](file://src/tools/index.ts#L1-L2)
 - [src/permissions/index.ts:1-2](file://src/permissions/index.ts#L1-L2)
+- [src/agents/index.ts:1-2](file://src/agents/index.ts#L1-L2)
+- [src/skill/index.ts:1-1](file://src/skill/index.ts#L1-L1)
 
 ## 详细组件分析
 
@@ -155,12 +192,12 @@ Return --> End(["结束"])
 Deny --> End
 ```
 
-图表来源
+**图表来源**
 - [src/tools/index.ts:1-2](file://src/tools/index.ts#L1-L2)
 - [src/permissions/index.ts:1-2](file://src/permissions/index.ts#L1-L2)
 - [src/core/index.ts:1-2](file://src/core/index.ts#L1-L2)
 
-章节来源
+**章节来源**
 - [src/tools/index.ts:1-2](file://src/tools/index.ts#L1-L2)
 - [AGENTS.md:36](file://AGENTS.md#L36)
 
@@ -188,11 +225,11 @@ Allow --> PEnd(["结束"])
 Block --> PEnd
 ```
 
-图表来源
+**图表来源**
 - [src/permissions/index.ts:1-2](file://src/permissions/index.ts#L1-L2)
 - [AGENTS.md:98](file://AGENTS.md#L98)
 
-章节来源
+**章节来源**
 - [src/permissions/index.ts:1-2](file://src/permissions/index.ts#L1-L2)
 - [AGENTS.md:98](file://AGENTS.md#L98)
 
@@ -206,6 +243,8 @@ Block --> PEnd
   - 将工具执行结果标准化，交由UI层渲染或继续后续流程。
 - 与上下文/会话层集成
   - 读取上下文以提升工具语义理解；将工具执行结果写入会话，支撑多轮对话。
+- 与智能体层/技能层集成
+  - 协调智能体选择与技能配置，实现复杂的AI代理行为。
 
 ```mermaid
 sequenceDiagram
@@ -214,7 +253,12 @@ participant Tools as "工具层"
 participant Perm as "权限层"
 participant Ctx as "上下文层"
 participant Sess as "会话层"
+participant Agents as "智能体层"
+participant Skill as "技能层"
 Core->>Ctx : 读取上下文
+Core->>Agents : 选择Agent并获取技能
+Agents->>Skill : 获取技能配置
+Skill-->>Agents : 返回技能定义
 Core->>Tools : 选择工具并装配参数
 Tools->>Perm : 请求权限校验
 Perm-->>Tools : 返回校验结果
@@ -222,14 +266,16 @@ Tools-->>Core : 执行结果
 Core->>Sess : 写入会话状态
 ```
 
-图表来源
+**图表来源**
 - [src/core/index.ts:1-2](file://src/core/index.ts#L1-L2)
 - [src/tools/index.ts:1-2](file://src/tools/index.ts#L1-L2)
 - [src/permissions/index.ts:1-2](file://src/permissions/index.ts#L1-L2)
 - [src/context/index.ts:1-2](file://src/context/index.ts#L1-L2)
 - [src/session/index.ts:1-2](file://src/session/index.ts#L1-L2)
+- [src/agents/index.ts:1-2](file://src/agents/index.ts#L1-L2)
+- [src/skill/index.ts:1-1](file://src/skill/index.ts#L1-L1)
 
-章节来源
+**章节来源**
 - [src/core/index.ts:1-2](file://src/core/index.ts#L1-L2)
 - [AGENTS.md:34](file://AGENTS.md#L34)
 
@@ -252,22 +298,61 @@ HandleBuiltIn --> Loop
 Delegate --> Loop
 ```
 
-图表来源
+**图表来源**
 - [src/cli/index.ts:23-59](file://src/cli/index.ts#L23-L59)
 
-章节来源
+**章节来源**
 - [src/cli/index.ts:1-65](file://src/cli/index.ts#L1-L65)
+
+### 智能体层（agents）API
+- Agent管理
+  - Agent注册：通过智能体层注册Agent实例，提供Agent配置与能力定义。
+  - Agent选择：核心层根据用户意图与上下文选择合适的Agent执行。
+  - 生命周期管理：支持Agent的创建、激活、停用与销毁。
+- 能力定义
+  - 工具绑定：将工具与Agent关联，定义Agent可使用的工具集合。
+  - 行为配置：配置Agent的推理策略、对话模式与执行偏好。
+
+**章节来源**
+- [src/agents/index.ts:1-2](file://src/agents/index.ts#L1-L2)
+
+### 技能层（skill）API
+- 技能管理
+  - 技能注册：通过技能层注册技能定义，包括技能名称、描述、参数Schema等。
+  - 技能选择：智能体层根据任务需求选择合适技能执行。
+  - 技能组合：支持多个技能的组合与编排，形成复杂的工作流。
+- 技能配置
+  - 参数配置：为技能提供灵活的参数配置选项。
+  - 依赖管理：管理技能间的依赖关系与执行顺序。
+
+**章节来源**
+- [src/skill/index.ts:1-1](file://src/skill/index.ts#L1-L1)
+
+### MCP层（mcp）API
+- MCP协议支持
+  - 协议适配：提供MCP（Model Context Protocol）协议的支持与适配。
+  - 通信桥接：作为工具层与外部模型之间的通信桥梁。
+- 集成接口
+  - 请求路由：将工具调用转换为MCP协议请求。
+  - 响应处理：处理MCP协议响应并转换为工具层可识别的格式。
+
+**章节来源**
+- [src/mcp/index.ts:1-1](file://src/mcp/index.ts#L1-L1)
 
 ## 依赖分析
 - 层级依赖
   - CLI → 核心层
-  - 核心层 → 工具层、权限层、上下文层、会话层
+  - 核心层 → 工具层、权限层、上下文层、会话层、智能体层、技能层、MCP层
   - 工具层 → 权限层
+  - 智能体层 → 工具层、上下文层
+  - 技能层 → 无下层依赖
+  - MCP层 → 无下层依赖
 - 耦合与内聚
   - 工具层与权限层通过统一的校验接口耦合，保持高内聚与低耦合。
   - 核心层作为编排中心，聚合多层能力，避免直接依赖底层实现细节。
+  - 智能体层与技能层通过接口耦合，支持灵活的Agent能力组合。
 - 循环依赖
-  - 严格遵循“上层可依赖下层”的规则，未见循环依赖迹象。
+  - 严格遵循"上层可依赖下层"的规则，未见循环依赖迹象。
 
 ```mermaid
 graph LR
@@ -276,13 +361,19 @@ CORE --> TOOLS["工具层"]
 CORE --> PERM["权限层"]
 CORE --> CTX["上下文层"]
 CORE --> SESS["会话层"]
+CORE --> AGENTS["智能体层"]
+CORE --> SKILL["技能层"]
+CORE --> MCP["MCP层"]
 TOOLS --> PERM
+AGENTS --> TOOLS
+AGENTS --> CTX
+SKILL --> AGENTS
 ```
 
-图表来源
+**图表来源**
 - [AGENTS.md:31-41](file://AGENTS.md#L31-L41)
 
-章节来源
+**章节来源**
 - [AGENTS.md:31-41](file://AGENTS.md#L31-L41)
 
 ## 性能考虑
@@ -296,8 +387,12 @@ TOOLS --> PERM
 - 核心层编排性能
   - 工具组合：对可并行工具进行并行执行，对串行工具进行流水线编排。
   - 上下文裁剪：仅保留必要上下文，降低序列化与传输成本。
+  - Agent选择优化：缓存Agent选择结果，减少重复计算。
+- 智能体与技能性能
+  - 技能缓存：缓存技能执行结果，支持去重计算。
+  - 依赖预加载：预加载技能依赖，减少首次调用延迟。
 - 监控指标
-  - 关键指标：工具执行耗时、成功率、失败率、并发数、缓存命中率。
+  - 关键指标：工具执行耗时、成功率、失败率、并发数、缓存命中率、Agent切换次数。
   - 告警阈值：为关键指标设定阈值，异常时自动告警。
 
 ## 故障排查指南
@@ -306,26 +401,36 @@ TOOLS --> PERM
   - 权限拒绝：检查权限层策略配置，核对调用者角色与工具权限映射。
   - 参数不合法：检查参数Schema与必填字段，确保类型与范围正确。
   - 执行超时：优化工具内部逻辑或增加超时阈值，必要时引入缓存。
+  - Agent选择失败：检查智能体层配置，确认Agent可用性与技能绑定。
+  - 技能执行异常：验证技能定义与依赖，检查参数配置与执行环境。
 - 排查步骤
   - 启用调试日志：记录工具选择、参数装配、权限校验与执行结果。
   - 分段测试：分别测试工具层与权限层的独立功能，定位问题边界。
   - 回滚策略：对新工具或策略变更进行灰度发布，快速回滚。
+  - Agent诊断：检查Agent配置、技能绑定与上下文状态。
 - 错误处理
   - 统一错误码：为不同错误场景定义清晰的错误码与提示。
   - 降级策略：在网络或外部服务不稳定时，提供降级方案（如本地缓存、默认值）。
+  - 自动恢复：实现必要的自动恢复机制，如连接重试、资源清理。
 
 ## 结论
-工具模块通过“工具层 + 权限层 + 核心层”的协作，实现了可扩展、可审计、可监控的工具调用体系。工具注册与发现、权限校验与安全策略、以及跨层的调用链路均在现有架构中得到清晰体现。建议在后续迭代中补充具体的工具接口定义、权限策略配置样例与性能监控埋点示例，以完善API文档的落地性与可操作性。
+工具模块通过"工具层 + 权限层 + 核心层"的协作，实现了可扩展、可审计、可监控的工具调用体系。随着智能体层、技能层和MCP层的引入，系统具备了更强的AI代理能力和协议支持。工具注册与发现、权限校验与安全策略、以及跨层的调用链路均在现有架构中得到清晰体现。建议在后续迭代中补充具体的工具接口定义、权限策略配置样例与性能监控埋点示例，以完善API文档的落地性与可操作性。
 
 ## 附录
 - 快速开始
   - 安装与运行：参考开发命令与构建脚本，使用 npm run dev 或 npm run build。
   - 扩展工具：在工具层新增工具实现并通过注册接口接入，确保提供参数Schema与最小权限策略。
+  - 配置Agent：在智能体层定义Agent能力，绑定相关工具与技能。
 - 参考命令
   - 开发模式：npm run dev
   - 构建产物：npm run build
   - 运行构建：npm start
+- 开发规范
+  - 命名约定：文件名使用 kebab-case.ts，类名使用 PascalCase，函数/变量使用 camelCase。
+  - 代码风格：使用 ESM import/export，优先使用 interface 定义类型，所有函数必须有明确的返回类型注解。
+  - 模块导出：每个层通过 index.ts 统一导出公共 API，内部实现文件不直接对外暴露。
 
-章节来源
+**章节来源**
 - [AGENTS.md:68-82](file://AGENTS.md#L68-L82)
 - [package.json:10-14](file://package.json#L10-L14)
+- [AGENTS.md:44-66](file://AGENTS.md#L44-L66)
