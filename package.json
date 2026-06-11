@@ -1,0 +1,31 @@
+{
+  "name": "easy-agent-cli",
+  "version": "1.0.0",
+  "description": "简易cli智能体",
+  "type": "module",
+  "main": "dist/cli/index.js",
+  "bin": {
+    "easy-agent": "dist/cli/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsx src/cli/index.ts",
+    "start": "node dist/cli/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SSZero-670/easy-agent-cli.git"
+  },
+  "keywords": ["cli", "agent", "ai"],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/SSZero-670/easy-agent-cli/issues"
+  },
+  "homepage": "https://github.com/SSZero-670/easy-agent-cli#readme",
+  "devDependencies": {
+    "@types/node": "^20.14.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.5.0"
+  }
+}

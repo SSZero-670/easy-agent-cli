@@ -1,0 +1,29 @@
+# 知识卡导出索引文件
+schema_version: 1
+locale: zh-CN
+branch: main
+exported_at: "2026-06-11T07:58:06Z"
+modules:
+    "":
+        dir_name: CLI 智能体框架
+        title: CLI 智能体框架
+        scope:
+            - README.md
+            - .gitignore
+            - AGENTS.md
+            - package.json
+            - package-lock.json
+            - tsconfig.json
+            - src/
+            - src\agents\index.ts
+            - src\cli\index.ts
+            - src\context\index.ts
+            - src\core\index.ts
+            - src\permissions\index.ts
+            - src\session\index.ts
+            - src\tools\index.ts
+            - src\ui\index.ts
+        source_files: []
+        children: []
+        depends_on: []
+        related_to: []
