@@ -33,6 +33,13 @@
       // [
       //   { "type": "text", "text": "描述图片" },
       //   { "type": "image_url", "image_url": { "url": "https://..." } }
+                // {
+                //     "type": "video_url",
+                //     "video_url": {
+                //         "url": "https://help-static-aliyun-doc.aliyuncs.com/file-manage-files/zh-CN/20241115/cqqkru/1.mp4"
+                //     },
+                //     "fps": 2
+                // }
       // ]
     },
     {

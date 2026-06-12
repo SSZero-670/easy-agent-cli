@@ -33,6 +33,8 @@
     "typescript": "^5.5.0"
   },
   "dependencies": {
-    "eventsource-parser": "^3.1.0"
+    "dotenv": "^17.4.2",
+    "eventsource-parser": "^3.1.0",
+    "zod": "^4.4.3"
   }
 }

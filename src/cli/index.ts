@@ -1,7 +1,10 @@
 #!/usr/bin/env node
 
+import "dotenv/config";
 import { createInterface } from "node:readline/promises";
 import { stdin, stdout } from "node:process";
+import { chatModelTest } from "../core/chatModel.js";
+
 
 const HELP_TEXT = `
 easy-agent-cli - 简易 CLI 智能体
@@ -58,7 +61,10 @@ async function main(): Promise<void> {
   }
 }
 
-main().catch((err) => {
-  console.error("发生错误:", err);
-  process.exit(1);
-});
+// main().catch((err) => {
+//   console.error("发生错误:", err);
+//   process.exit(1);
+// });
+
+chatModelTest();
+

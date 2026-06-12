@@ -8,9 +8,9 @@
 import { createParser } from "eventsource-parser";
 
 // ─── 配置 ──────────────────────────────────────────────
-const API_KEY = process.env.OPENAI_API_KEY ?? "sk-xxx";
-const BASE_URL = process.env.OPENAI_BASE_URL ?? "https://api.openai.com/v1";
-const MODEL = process.env.MODEL ?? "gpt-4o";
+const API_KEY = process.env.OPENAI_API_KEY ?? "sk-6c37abf8ae2c463880631426a3be5f2f";
+const BASE_URL = process.env.OPENAI_BASE_URL ?? "https://dashscope.aliyuncs.com/compatible-mode/v1";
+const MODEL = process.env.MODEL ?? "qwen3.6-plus";
 
 // ─── 1. 普通 HTTP 请求（非流式）──────────────────────────
 async function chatCompletion(prompt: string): Promise<string> {
